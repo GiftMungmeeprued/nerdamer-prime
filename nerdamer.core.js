@@ -1294,7 +1294,7 @@ var nerdamer = (function (imports) {
      */
     var allNumbers = function (args) {
         for(var i = 0; i < args.length; i++)
-            if(args[i].group !== N)
+            if(args[i].group !== N && !args[i].isInfinity)
                 return false;
         return true;
     };
