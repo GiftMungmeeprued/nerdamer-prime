@@ -7829,7 +7829,7 @@ var nerdamer = (function (imports) {
                     symbol.multiplier = symbol.multiplier.abs();
                 }
 
-                var q = symbol.multiplier.toDecimal(),
+                var q = symbol.multiplier.num / symbol.multiplier.den,
                         qa = Math.abs(q),
                         t = Math.sqrt(qa);
 
