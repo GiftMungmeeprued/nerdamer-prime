@@ -5537,8 +5537,10 @@ var nerdamer = (function (imports) {
                         return complex.evaluate(symbol, 'atan');
                     return _.symfunction('atan', arguments);
                 }
+                else if (symbol.isInfinity)
+                    retval = symbol.multiplier.lessThan(0)?_.parse("-pi/2") : _.parse("pi/2")
                 else if(symbol.equals(-1))
-                    retval = _.parse('-pi/4');
+                    retval = _.parse('-pi/4');                
                 else
                     retval = _.symfunction('atan', arguments);
                 return retval;
