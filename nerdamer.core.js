@@ -5284,7 +5284,7 @@ var nerdamer = (function (imports) {
                     else {
                         var n = m.num, d = m.den;
                         if(d == 2)
-                            throw new UndefinedError('tan is undefined for ' + symbol.toString());
+                            retval = _.parse("Infinity")
                         else if(d == 3) {
                             retval = _.parse('sqrt(3)');
                             c = true;
