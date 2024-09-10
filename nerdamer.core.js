@@ -126,6 +126,8 @@ var nerdamer = (function (imports) {
         SCIENTIFIC_IGNORE_ZERO_EXPONENTS: true,
         // no simplify() or solveFor() should take more ms than this
         TIMEOUT: 500,
+        // convert between degree and radian
+        ANGLE_UNIT: 'degree'
     };
 
     (function () {
@@ -5130,6 +5132,11 @@ var nerdamer = (function (imports) {
         var trig = this.trig = {
             //container for trigonometric function
             cos: function (symbol) {
+                // convert between angle units (degree, radian) when evaluate
+                let origSymbol = _.parse(symbol.valueOf());
+                var angleConverter = Settings.ANGLE_UNIT==='degree'? _.parse('pi/180'): _.parse('1');
+                symbol = _.multiply(symbol, angleConverter);
+
                 if(symbol.equals('pi') && symbol.multiplier.den.equals(2))
                     return new Symbol(0);
 
@@ -5178,7 +5185,7 @@ var nerdamer = (function (imports) {
                             c = true;
                         }
                         else
-                            retval = _.symfunction('cos', [symbol]);
+                            retval = _.symfunction('cos', [origSymbol]);
                     }
                 }
 
@@ -5186,11 +5193,16 @@ var nerdamer = (function (imports) {
                     retval.negate();
 
                 if(!retval)
-                    retval = _.symfunction('cos', [symbol]);
+                    retval = _.symfunction('cos', [origSymbol]);
 
                 return retval;
             },
             sin: function (symbol) {
+                // convert between angle units (degree, radian) when evaluate
+                let origSymbol = _.parse(symbol.valueOf());
+                var angleConverter = Settings.ANGLE_UNIT==='degree'? _.parse('pi/180'): _.parse('1');
+                symbol = _.multiply(symbol, angleConverter);
+                
                 if(Settings.PARSE2NUMBER) {
                     if(symbol.isConstant()) {
                         if(symbol % Math.PI === 0) {
@@ -5242,12 +5254,12 @@ var nerdamer = (function (imports) {
                             c = true;
                         }
                         else
-                            retval = _.multiply(new Symbol(sign), _.symfunction('sin', [symbol]));
+                            retval = _.multiply(new Symbol(sign), _.symfunction('sin', [origSymbol]));
                     }
                 }
 
                 if(!retval)
-                    retval = _.multiply(new Symbol(sign), _.symfunction('sin', [symbol]));
+                    retval = _.multiply(new Symbol(sign), _.symfunction('sin', [origSymbol]));
 
                 if(c && (q === 3 || q === 4))
                     retval.negate();
@@ -5255,6 +5267,11 @@ var nerdamer = (function (imports) {
                 return retval;
             },
             tan: function (symbol) {
+                // convert between angle units (degree, radian) when evaluate
+                let origSymbol = _.parse(symbol.valueOf());
+                var angleConverter = Settings.ANGLE_UNIT==='degree'? _.parse('pi/180'): _.parse('1');
+                symbol = _.multiply(symbol, angleConverter);
+                
                 if(Settings.PARSE2NUMBER) {
                     if(symbol % Math.PI === 0 && symbol.isLinear()) {
                         return new Symbol(0);
@@ -5276,7 +5293,9 @@ var nerdamer = (function (imports) {
 
                 symbol.multiplier = m;
 
-                if(symbol.isPi() && symbol.isLinear()) {
+                if(symbol.equals(0)) {
+                    retval = new Symbol(0);
+                } else if(symbol.isPi() && symbol.isLinear()) {
                     //return 0 for all multiples of pi
                     if(isInt(m)) {
                         retval = new Symbol(0);
@@ -5284,7 +5303,7 @@ var nerdamer = (function (imports) {
                     else {
                         var n = m.num, d = m.den;
                         if(d == 2)
-                            retval = _.parse("Infinity")
+                            retval = _.parse("Infinity");
                         else if(d == 3) {
                             retval = _.parse('sqrt(3)');
                             c = true;
@@ -5298,12 +5317,12 @@ var nerdamer = (function (imports) {
                             c = true;
                         }
                         else
-                            retval = _.symfunction('tan', [symbol]);
+                            retval = _.symfunction('tan', [origSymbol]);
                     }
                 }
 
                 if(!retval)
-                    retval = _.symfunction('tan', [symbol]);
+                    retval = _.symfunction('tan', [origSymbol]);
 
                 if(c && (q === 2 || q === 4))
                     retval.negate();
@@ -5311,6 +5330,11 @@ var nerdamer = (function (imports) {
                 return retval;
             },
             sec: function (symbol) {
+                // convert between angle units (degree, radian) when evaluate
+                let origSymbol = _.parse(symbol.valueOf());
+                var angleConverter = Settings.ANGLE_UNIT==='degree'? _.parse('pi/180'): _.parse('1');
+                symbol = _.multiply(symbol, angleConverter);
+
                 if(Settings.PARSE2NUMBER) {
                     if(symbol.isConstant()) {
                         if(Settings.USE_BIG) {
@@ -5330,7 +5354,9 @@ var nerdamer = (function (imports) {
                         m = symbol.multiplier.abs();
                 symbol.multiplier = m;
 
-                if(symbol.isPi() && symbol.isLinear()) {
+                if(symbol.equals(0)) {
+                    retval = new Symbol(1);
+                } else if(symbol.isPi() && symbol.isLinear()) {
                     //return for 1 or -1 for multiples of pi
                     if(isInt(m)) {
                         retval = new Symbol(even(m) ? 1 : -1);
@@ -5338,7 +5364,7 @@ var nerdamer = (function (imports) {
                     else {
                         var n = m.num, d = m.den;
                         if(d == 2)
-                            throw new UndefinedError('sec is undefined for ' + symbol.toString());
+                            retval = _.parse("Infinity");
                         else if(d == 3) {
                             retval = new Symbol(2);
                             c = true;
@@ -5352,7 +5378,7 @@ var nerdamer = (function (imports) {
                             c = true;
                         }
                         else
-                            retval = _.symfunction('sec', [symbol]);
+                            retval = _.symfunction('sec', [origSymbol]);
                     }
                 }
 
@@ -5360,11 +5386,16 @@ var nerdamer = (function (imports) {
                     retval.negate();
 
                 if(!retval)
-                    retval = _.symfunction('sec', [symbol]);
+                    retval = _.symfunction('sec', [origSymbol]);
 
                 return retval;
             },
             csc: function (symbol) {
+                // convert between angle units (degree, radian) when evaluate
+                let origSymbol = _.parse(symbol.valueOf());
+                var angleConverter = Settings.ANGLE_UNIT==='degree'? _.parse('pi/180'): _.parse('1');
+                symbol = _.multiply(symbol, angleConverter);
+
                 if(Settings.PARSE2NUMBER) {
                     if(symbol.isConstant()) {
                         if(Settings.USE_BIG) {
@@ -5386,10 +5417,12 @@ var nerdamer = (function (imports) {
 
                 symbol.multiplier = m;
 
-                if(symbol.isPi() && symbol.isLinear()) {
+                if(symbol.equals(0)) {
+                    retval = _.parse("Infinity");
+                } else if(symbol.isPi() && symbol.isLinear()) {
                     //return for 0 for multiples of pi
                     if(isInt(m)) {
-                        throw new UndefinedError('csc is undefined for ' + symbol.toString());
+                        retval = _.parse("Infinity");
                     }
                     else {
                         var n = m.num, d = m.den;
@@ -5410,12 +5443,12 @@ var nerdamer = (function (imports) {
                             c = true;
                         }
                         else
-                            retval = _.multiply(new Symbol(sign), _.symfunction('csc', [symbol]));
+                            retval = _.multiply(new Symbol(sign), _.symfunction('csc', [origSymbol]));
                     }
                 }
 
                 if(!retval)
-                    retval = _.multiply(new Symbol(sign), _.symfunction('csc', [symbol]));
+                    retval = _.multiply(new Symbol(sign), _.symfunction('csc', [origSymbol]));
 
                 if(c && (q === 3 || q === 4))
                     retval.negate();
@@ -5423,6 +5456,11 @@ var nerdamer = (function (imports) {
                 return retval;
             },
             cot: function (symbol) {
+                // convert between angle units (degree, radian) when evaluate
+                let origSymbol = _.parse(symbol.valueOf());
+                var angleConverter = Settings.ANGLE_UNIT==='degree'? _.parse('pi/180'): _.parse('1');
+                symbol = _.multiply(symbol, angleConverter);
+
                 if(Settings.PARSE2NUMBER) {
                     if(symbol % (Math.PI/2) === 0) {
                         return new Symbol(0);
@@ -5445,10 +5483,12 @@ var nerdamer = (function (imports) {
 
                 symbol.multiplier = m;
 
-                if(symbol.isPi() && symbol.isLinear()) {
+                if(symbol.equals(0)) {
+                    retval = _.parse("Infinity");
+                } else if(symbol.isPi() && symbol.isLinear()) {
                     //return 0 for all multiples of pi
                     if(isInt(m)) {
-                        throw new UndefinedError('cot is undefined for ' + symbol.toString());
+                        retval = _.parse("Infinity");
                     }
                     else {
                         var n = m.num, d = m.den;
@@ -5467,12 +5507,12 @@ var nerdamer = (function (imports) {
                             c = true;
                         }
                         else
-                            retval = _.symfunction('cot', [symbol]);
+                            retval = _.symfunction('cot', [origSymbol]);
                     }
                 }
 
                 if(!retval)
-                    retval = _.symfunction('cot', [symbol]);
+                    retval = _.symfunction('cot', [origSymbol]);
 
                 if(c && (q === 2 || q === 4))
                     retval.negate();
@@ -5480,69 +5520,120 @@ var nerdamer = (function (imports) {
                 return retval;
             },
             acos: function (symbol) {
+                var angleConverter = Settings.ANGLE_UNIT==='degree'? _.parse('180/pi'): _.parse('1');
+
                 if(Settings.PARSE2NUMBER) {
                     if(symbol.isConstant()) {
                         // Handle values in the complex domain
                         if(symbol.gt(1) || symbol.lt(-1)) {
                             var x = symbol.toString();
-                            return expand(evaluate(`pi/2-asin(${x})`));
+                            return _.multiply(expand(evaluate(`pi/2-asin(${x})`)), angleConverter);
                         }
                         // Handle big numbers
                         if(Settings.USE_BIG) {
-                            return new Symbol(bigDec.acos(symbol.multiplier.toDecimal()));
+                            return new Symbol(bigDec.acos(symbol.multiplier.toDecimal())*angleConverter);
                         }
 
-                        return new Symbol(Math.acos(symbol.valueOf()));
+                        return new Symbol(Math.acos(symbol.valueOf())*angleConverter);
                     }
                     if(symbol.isImaginary())
-                        return complex.evaluate(symbol, 'acos');
+                        return _.multiply(complex.evaluate(symbol, 'acos'), angleConverter);
                 }
-                return _.symfunction('acos', arguments);
+
+                var retval;
+                if(symbol.equals(0))
+                    retval = _.multiply(_.parse("pi/2"), angleConverter);
+                else if(symbol.abs().equals(_.parse("1/2")))
+                    retval = _.multiply(_.parse("pi/3"), angleConverter);
+                else if(symbol.abs().equals(_.parse("1/sqrt(2)")))
+                    retval = _.multiply(_.parse("pi/4"), angleConverter);
+                else if(symbol.abs().equals(_.parse("sqrt(3)/2")))
+                    retval = _.multiply(_.parse("pi/6"), angleConverter);
+                else if(symbol.abs().equals(_.parse("1")))
+                    retval = new Symbol(0);
+
+                if(!retval)
+                    retval = _.symfunction('acos', arguments);
+                else if(symbol.lessThan(0))
+                    retval = _.subtract(_.multiply(_.parse("pi"), angleConverter), retval);
+
+                return retval;
             },
             asin: function (symbol) {
+                var angleConverter = Settings.ANGLE_UNIT==='degree'? _.parse('180/pi'): _.parse('1');
+
                 if(Settings.PARSE2NUMBER) {
                     if(symbol.isConstant()) {
                         // Handle values in the complex domain
                         if(symbol.gt(1) || symbol.lt(-1)) {
                             var i = Settings.IMAGINARY;
                             var x = symbol.multiplier.toDecimal();
-                            return expand(evaluate(`${i}*log(sqrt(1-${x}^2)-${i}*${x})`));
+                            return _.multiply(expand(evaluate(`${i}*log(sqrt(1-${x}^2)-${i}*${x})`)), angleConverter);
                         }
                         // Handle big numbers
                         if(Settings.USE_BIG) {
-                            return new Symbol(bigDec.asin(symbol.multiplier.toDecimal()));
+                            return new Symbol(bigDec.asin(symbol.multiplier.toDecimal())*angleConverter);
                         }
 
-                        return new Symbol(Math.asin(symbol.valueOf()));
+                        return new Symbol(Math.asin(symbol.valueOf())*angleConverter);
                     }
                     if(symbol.isImaginary())
-                        return complex.evaluate(symbol, 'asin');
+                        return _.multiply(complex.evaluate(symbol, 'asin'), angleConverter);
                 }
-                return _.symfunction('asin', arguments);
-            },
-            atan: function (symbol) {
+
                 var retval;
                 if(symbol.equals(0))
                     retval = new Symbol(0);
-                else if(Settings.PARSE2NUMBER) {
+                else if(symbol.abs().equals(_.parse("1/2")))
+                    retval = _.multiply(_.parse("pi/6"), angleConverter);
+                else if(symbol.abs().equals(_.parse("1/sqrt(2)")))
+                    retval = _.multiply(_.parse("pi/4"), angleConverter);
+                else if(symbol.abs().equals(_.parse("sqrt(3)/2")))
+                    retval = _.multiply(_.parse("pi/3"), angleConverter);
+                else if(symbol.abs().equals(_.parse("1")))
+                    retval = _.multiply(_.parse("pi/2"), angleConverter);
+
+                if(!retval)
+                    retval = _.symfunction('asin', arguments);
+                else if(symbol.lessThan(0))
+                    retval.negate();
+
+                return retval;
+            },
+            atan: function (symbol) {
+                var angleConverter = Settings.ANGLE_UNIT==='degree'? _.parse('180/pi'): _.parse('1');
+
+                if(Settings.PARSE2NUMBER) {
                     if(symbol.isConstant()) {
                         // Handle big numbers
                         if(Settings.USE_BIG) {
-                            return new Symbol(bigDec.atan(symbol.multiplier.toDecimal()));
+                            return new Symbol(bigDec.atan(symbol.multiplier.toDecimal())*angleConverter);
                         }
 
-                        return new Symbol(Math.atan(symbol.valueOf()));
+                        return new Symbol(Math.atan(symbol.valueOf())*angleConverter);
                     }
                     if(symbol.isImaginary())
-                        return complex.evaluate(symbol, 'atan');
+                        return _.multiply(complex.evaluate(symbol, 'atan'), angleConverter);
                     return _.symfunction('atan', arguments);
-                }
-                else if (symbol.isInfinity)
-                    retval = symbol.multiplier.lessThan(0)?_.parse("-pi/2") : _.parse("pi/2")
-                else if(symbol.equals(-1))
-                    retval = _.parse('-pi/4');                
-                else
+                }                
+
+                var retval;
+                if(symbol.equals(0))
+                    retval = new Symbol(0);
+                else if(symbol.abs().equals(_.parse("1/sqrt(3)")))
+                    retval = _.multiply(_.parse("pi/6"), angleConverter);
+                else if(symbol.abs().equals(_.parse("1")))
+                    retval = _.multiply(_.parse("pi/4"), angleConverter);
+                else if(symbol.abs().equals(_.parse("sqrt(3)")))
+                    retval = _.multiply(_.parse("pi/3"), angleConverter);
+                else if(symbol.isInfinity)
+                    retval = _.multiply(_.parse("pi/2"), angleConverter);
+                
+                if(!retval)
                     retval = _.symfunction('atan', arguments);
+                else if(symbol.lessThan(0))
+                    retval.negate();
+
                 return retval;
             },
             asec: function (symbol) {
