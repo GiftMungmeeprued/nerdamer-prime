@@ -127,7 +127,7 @@ var nerdamer = (function (imports) {
         // no simplify() or solveFor() should take more ms than this
         TIMEOUT: 500,
         // convert between degree and radian
-        ANGLE_UNIT: 'degree'
+        ANGLE_UNIT: 'radian'
     };
 
     (function () {
