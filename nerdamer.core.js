@@ -6110,7 +6110,7 @@ var nerdamer = (function (imports) {
             'degrees': [degrees, 1],
             'min': [min, -1],
             'max': [max, -1],
-            'erf': [, 1],
+            'erf': [erf, 1],
             'floor': [, 1],
             'ceil': [, 1],
             'trunc': [, 1],
@@ -7665,11 +7665,18 @@ var nerdamer = (function (imports) {
         function erf(symbol) {
             var _symbol = evaluate(symbol);
 
-            if(_symbol.isConstant()) {
-                return Math2.erf(_symbol);
+            if(_symbol.isInfinity){
+                if(_symbol.lessThan(0))
+                    return new Symbol(-1);
+                return new Symbol(1);
             }
-            else if(_symbol.isImaginary()) {
-                return complex.erf(symbol);
+            if(Settings.PARSE2NUMBER){
+                if(_symbol.isConstant()) {
+                    return new Symbol(Math2.erf(_symbol));
+                }
+                else if(_symbol.isImaginary()) {
+                    return new Symbol(complex.erf(symbol));
+                }
             }
             return _.symfunction('erf', arguments);
         }
