@@ -7665,10 +7665,12 @@ var nerdamer = (function (imports) {
         function erf(symbol) {
             var _symbol = evaluate(symbol);
 
-            if(_symbol.isInfinity){
+            if(_symbol.isInfinity) {
                 if(_symbol.lessThan(0))
                     return new Symbol(-1);
                 return new Symbol(1);
+            } else if(_symbol.equals(0)) {
+                return new Symbol(0);
             }
             if(Settings.PARSE2NUMBER){
                 if(_symbol.isConstant()) {
