@@ -1408,6 +1408,9 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
                                         case EXP:
                                             retval = __.integrate(_.parse(format('e^({0})', arg)), dx, depth);
                                             break;
+                                        case Settings.LOG10:
+                                            retval = __.integrate(_.parse(format('log({0})/' + Settings.LOG + '(10)', arg)), dx, depth)
+                                            break;
                                         case 'S':
                                             var arg = symbol.args[0].clone(),
                                                     dc = __.integration.decompose_arg(arg, dx),
