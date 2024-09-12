@@ -3998,24 +3998,36 @@ var nerdamer = (function (imports) {
          * @returns {Symbol}
          */
         imagpart: function () {
-            if(this.group === S && this.isImaginary()) {
+            if(this.imaginary){
                 let x = this;
                 if (this.power.isNegative()) {
                     x = this.clone();
                     x.power.negate();
-                    x.multiplier.negate()
+                    x.multiplier.negate();
                 }
-                return new Symbol(x.multiplier);
-            }
-            if(this.isComposite()) {
+                return new Symbol(x.multiplier);}
+            else if(this.isComposite()) {
                 var retval = new Symbol(0);
                 this.each(function (x) {
                     retval = _.add(retval, x.imagpart());
                 });
                 return retval;
             }
-            if(this.group === CB)
-                return this.stripVar(Settings.IMAGINARY);
+            else if(this.isImaginary()){
+                if(this.symbols) {
+                    for(var x in this.symbols)
+                        if(this.symbols[x].imaginary){
+                            let y = this.symbols[x];
+                            if (y.power.isNegative()) {
+                                y = this.symbols[x].clone();
+                                y.power.negate();
+                                this.multiplier.negate();
+                            }
+                            this.symbols[x] = _.multiply(new Symbol(y.multiplier), new Symbol(Settings.IMAGINARY));
+                        }
+                    return this.stripVar(Settings.IMAGINARY);
+                }
+            }
             return new Symbol(0);
         },
         isInteger: function () {
