@@ -391,6 +391,9 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
                     return retval;
                 });
             }
+            else if(end.isInfinity || start.isInfinity) {
+                throw new core.exceptions.OperatorNotSupportedError("Infinite sum not supported")
+            }
             else {
                 retval = _.symfunction('sum', arguments);
             }
@@ -418,6 +421,9 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
                     }
                     return retval;
                 });
+            }
+            else if(end.isInfinity || start.isInfinity) {
+                throw new core.exceptions.OperatorNotSupportedError("Infinite product not supported")
             }
             else {
                 retval = _.symfunction('product', arguments);

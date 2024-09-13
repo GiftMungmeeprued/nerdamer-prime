@@ -1390,6 +1390,8 @@ var nerdamer = (function (imports) {
     var InfiniteLoopError = customError('InfiniteLoopError');
     // Is thrown if an operator is found when there shouldn't be one
     var UnexpectedTokenError = customError('UnexpectedTokenError');
+    // Is thrown if operation not supported given the input
+    var OperatorNotSupportedError = customError('OperatorNotSupportedError');
 
     var exceptions = {
         DivisionByZero: DivisionByZero,
@@ -1407,7 +1409,8 @@ var nerdamer = (function (imports) {
         NerdamerValueError: NerdamerValueError,
         SolveError: SolveError,
         InfiniteLoopError: InfiniteLoopError,
-        UnexpectedTokenError: UnexpectedTokenError
+        UnexpectedTokenError: UnexpectedTokenError,
+        OperatorNotSupportedError: OperatorNotSupportedError
     };
 //Math2 ========================================================================
     //This object holds additional functions for nerdamer. Think of it as an extension of the Math object.
