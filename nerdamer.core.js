@@ -2315,6 +2315,60 @@ var nerdamer = (function (imports) {
         return Math.ceil(x);
     };
 
+//TrigSolver ========================================================================
+    //Trigonometric functions for solve() that support conversion from degree to radian
+    //NOTE: DO NOT USE INLINE COMMENTS WITH THE MATH2 OBJECT! THIS BREAK DURING COMPILATION OF BUILDFUNCTION.
+    var TrigSolver = {
+        sin: function (x) {
+            var multiplier = Settings.ANGLE_UNIT==='degree'? Math.PI/180: 1;
+            return Math.sin(x*multiplier);
+        },
+        cos: function (x) {
+            var multiplier = Settings.ANGLE_UNIT==='degree'? Math.PI/180: 1;
+            return Math.cos(x*multiplier);
+        },
+        tan: function (x) {
+            var multiplier = Settings.ANGLE_UNIT==='degree'? Math.PI/180: 1;
+            return Math.tan(x*multiplier);
+        },
+        csc: function (x) {
+            var multiplier = Settings.ANGLE_UNIT==='degree'? Math.PI/180: 1;
+            return 1/Math.sin(x*multiplier);
+        },
+        sec: function (x) {
+            var multiplier = Settings.ANGLE_UNIT==='degree'? Math.PI/180: 1;
+            return 1/Math.cos(x*multiplier);
+        },
+        cot: function (x) {
+            var multiplier = Settings.ANGLE_UNIT==='degree'? Math.PI/180: 1;
+            return 1/Math.tan(x*multiplier);
+        },    
+        asin: function (x) {
+            var multiplier = Settings.ANGLE_UNIT==='degree'? 180/Math.PI: 1;
+            return Math.asin(x)*multiplier;
+        },
+        acos: function (x) {
+            var multiplier = Settings.ANGLE_UNIT==='degree'? 180/Math.PI: 1;
+            return Math.acos(x)*multiplier;
+        },
+        atan: function (x) {
+            var multiplier = Settings.ANGLE_UNIT==='degree'? 180/Math.PI: 1;
+            return Math.atan(x)*multiplier;
+        },
+        acsc: function (x) {
+            var multiplier = Settings.ANGLE_UNIT==='degree'? 180/Math.PI: 1;
+            return Math.asin(1 / x)*multiplier;
+        },
+        asec: function (x) {
+            var multiplier = Settings.ANGLE_UNIT==='degree'? 180/Math.PI: 1;
+            return Math.acos(1 / x)*multiplier;
+        },
+        acot: function (x) {
+            var multiplier = Settings.ANGLE_UNIT==='degree'? 180/Math.PI: 1;
+            return Math.atan(1 / x)*multiplier;
+        },
+    }
+
 //Global functions =============================================================
     /**
      * This method will return a hash or a text representation of a Symbol, Matrix, or Vector.
@@ -12157,7 +12211,17 @@ var nerdamer = (function (imports) {
                 },
                         ftext_function = function (bn) {
                             var retval;
-                            if(bn in Math)
+                            if(bn in TrigSolver) {
+                                if(supplements.indexOf(bn) === -1) { // make sure you're not adding the function twice
+                                    //Math2 functions aren't part of the standard javascript
+                                    //Math library and must be exported.
+                                    xports.push(`var Settings = {ANGLE_UNIT:'${Settings.ANGLE_UNIT}'}; `);
+                                    xports.push('var ' + bn + ' = ' + TrigSolver[bn].toString() + '; ');
+                                    supplements.push(bn);
+                                }
+                                retval = bn;
+                            }
+                            else if(bn in Math)
                                 retval = 'Math.' + bn;
                             else {
                                 bn = Build.getProperName(bn);
