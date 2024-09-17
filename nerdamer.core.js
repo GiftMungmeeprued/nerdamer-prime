@@ -8256,52 +8256,13 @@ var nerdamer = (function (imports) {
         function arg(symbol) {
             var re = symbol.realpart();
             var im = symbol.imagpart();
-            if(re.isConstant() && im.isConstant())
-                return new Symbol(Math.atan2(im, re));
-            return _.symfunction('atan2', [im, re]);
-        }
-
-        /**
-         * Returns the arugment of a complex number
-         * @param {Symbol} symbol
-         * @returns {Symbol}
-         */
-        function arg(symbol) {
-            var re = symbol.realpart();
-            var im = symbol.imagpart();
-            if(re.isConstant() && im.isConstant()) {
-                // right angles
-                if(im.equals(0) && re.equals(1)) {
-                    return _.parse('0');
-                }
-                else if(im.equals(1) && re.equals(0)) {
-                    return _.parse('pi/2');
-                }
-                if(im.equals(0) && re.equals(-1)) {
-                    return _.parse('pi');
-                }
-                else if(im.equals(-1) && re.equals(0)) {
-                    return _.parse('-pi/2');
-                }
-
-                // 45 degrees
-                else if(im.equals(1) && re.equals(1)) {
-                    return _.parse('pi/4');
-                }
-                else if(im.equals(1) && re.equals(-1)) {
-                    return _.parse('pi*3/4');
-                }
-                else if(im.equals(-1) && re.equals(1)) {
-                    return _.parse('-pi/4');
-                }
-                else if(im.equals(-1) && re.equals(-1)) {
-                    return _.parse('-pi*3/4');
-                }
-                
-                // all the rest
-                return new Symbol(Math.atan2(im, re));
+            if(re.equals(0) && im.equals(0))
+                throw new UndefinedError('Argument of zero is undefined');
+            else if(evaluate(re).isConstant() && evaluate(im).isConstant()) {
+                var multiplier = new Symbol(Settings.ANGLE_UNIT==='degree'? '180': 'pi');
+                return _.multiply(new Symbol(Math.atan2(evaluate(im), evaluate(re))/Math.PI), multiplier);
             }
-            return _.symfunction('atan2', [im, re]);
+            return _.symfunction('arg', [symbol]);
         }
 
         /**
