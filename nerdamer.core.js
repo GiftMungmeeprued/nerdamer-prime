@@ -4039,7 +4039,7 @@ var nerdamer = (function (imports) {
             }
             else if(this.imaginary)
                 return new Symbol(0);
-            else if(this.isComposite()) {
+            else if(this.isComposite() && this.power.isOne()) {
                 var retval = new Symbol(0);
                 this.each(function (x) {
                     retval = _.add(retval, x.realpart());
@@ -4063,7 +4063,7 @@ var nerdamer = (function (imports) {
                     x.multiplier.negate();
                 }
                 return new Symbol(x.multiplier);}
-            else if(this.isComposite()) {
+            else if(this.isComposite() && this.power.isOne()) {
                 var retval = new Symbol(0);
                 this.each(function (x) {
                     retval = _.add(retval, x.imagpart());
@@ -7065,7 +7065,11 @@ var nerdamer = (function (imports) {
                                 //call all the pre-operators
                                 this.callPeekers('pre_operator', a, b, e);
 
-                                var ans = _[e.action](a, b);
+                                var ans;
+                                if(e.action==='divide')
+                                    ans = _.callfunction(e.action, [a,b]);
+                                else
+                                    ans = _[e.action](a, b);
 
                                 //call all the pre-operators
                                 this.callPeekers('post_operator', ans, a, b, e);
@@ -9511,7 +9515,7 @@ var nerdamer = (function (imports) {
                     return a.clone();
                 }
 
-                if((a.isImaginary() && !a.imaginary) || (b.isImaginary()) && !b.imaginary) {
+                if((a.isImaginary() && !a.imaginary) || (b.isImaginary() && !b.imaginary)) {
                     var x = a.realpart();
                     var y = a.imagpart();
                     var z = b.realpart();
@@ -9860,14 +9864,16 @@ var nerdamer = (function (imports) {
                     result = a.clone();
                     result.multiplier = result.multiplier.divide(b.multiplier);
                 }
-                else if(a.isImaginary() || b.isImaginary()){
-                    var x = a.realpart();
-                    var y = a.imagpart();
-                    var z = b.realpart();
-                    var w = b.imagpart();
-                    var denom = _.add(_.pow(z, new Symbol(2)), _.pow(w, new Symbol(2)))
-                    var real = _.divide(_.add(_.multiply(x,z), _.multiply(y,w)), denom);
-                    var imag = _.divide(_.subtract(_.multiply(y,z), _.multiply(x,w)), denom);
+                else if((a.isImaginary() && !a.imaginary) || (b.isImaginary() && !b.imaginary)){
+                    var a_ = expand(a).clone();
+                    var b_ = expand(b).clone();
+                    var x = a_.realpart();
+                    var y = a_.imagpart();
+                    var z = b_.realpart();
+                    var w = b_.imagpart();
+                    var denom = _.add(_.pow(z, new Symbol(2)), _.pow(w, new Symbol(2)));
+                    var real = _.divide(_.add(_.multiply(x,z), _.multiply(y,w)), denom.clone());
+                    var imag = _.divide(_.subtract(_.multiply(y,z), _.multiply(x,w)), denom.clone());
                     result = _.add(real, _.multiply(imag, Symbol.imaginary()));
                 }
                 else {
@@ -10039,6 +10045,11 @@ var nerdamer = (function (imports) {
                         nim = _.multiply(r, _.trig.sin(theta));
                         return _.add(nre, _.multiply(Symbol.imaginary(), nim));
                     }
+                }
+
+                // expand complex number
+                if(bIsInt && b.lessThan(0)) {
+                    return _.divide(new Symbol('1'), _.pow(a,b.clone().negate()));
                 }
 
                 // Take care of the symbolic part
