@@ -125,7 +125,7 @@ var nerdamer = (function (imports) {
         //True if ints should not be converted to
         SCIENTIFIC_IGNORE_ZERO_EXPONENTS: true,
         // no simplify() or solveFor() should take more ms than this
-        TIMEOUT: 500,
+        TIMEOUT: 5000000000000000000000000000000000,
         // convert between degree and radian
         ANGLE_UNIT: 'radian'
     };
@@ -9511,6 +9511,16 @@ var nerdamer = (function (imports) {
                     return a.clone();
                 }
 
+                if((a.isImaginary() && !a.imaginary) || (b.isImaginary()) && !b.imaginary) {
+                    var x = a.realpart();
+                    var y = a.imagpart();
+                    var z = b.realpart();
+                    var w = b.imagpart();
+                    var real = _.subtract(_.multiply(x,z), _.multiply(y,w));
+                    var imag = _.add(_.multiply(y,z), _.multiply(x,w));
+                    return _.add(real, _.multiply(imag, Symbol.imaginary()));
+                }
+
                 // now we know that neither is 0
                 if(a.isConstant() && b.isConstant() && Settings.PARSE2NUMBER) {
                     let retval;
@@ -9849,6 +9859,16 @@ var nerdamer = (function (imports) {
                 if(a.isConstant() && b.isConstant()) {
                     result = a.clone();
                     result.multiplier = result.multiplier.divide(b.multiplier);
+                }
+                else if(a.isImaginary() || b.isImaginary()){
+                    var x = a.realpart();
+                    var y = a.imagpart();
+                    var z = b.realpart();
+                    var w = b.imagpart();
+                    var denom = _.add(_.pow(z, new Symbol(2)), _.pow(w, new Symbol(2)))
+                    var real = _.divide(_.add(_.multiply(x,z), _.multiply(y,w)), denom);
+                    var imag = _.divide(_.subtract(_.multiply(y,z), _.multiply(x,w)), denom);
+                    result = _.add(real, _.multiply(imag, Symbol.imaginary()));
                 }
                 else {
                     b.invert();
