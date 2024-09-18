@@ -7678,6 +7678,10 @@ var nerdamer = (function (imports) {
                 return retval;
             }
             else if(symbol.isConstant()) {
+                if(isInt(symbol)) {
+                    retval = Math2.bigfactorial(symbol);
+                    return new Symbol(retval);
+                }
                 var den = symbol.getDenom();
                 if(den.equals(2)) {
                     var num = symbol.getNum();
