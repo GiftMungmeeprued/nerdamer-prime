@@ -6161,7 +6161,7 @@ var nerdamer = (function (imports) {
             'coth': [trigh.coth, 1],
             'acosh': [trigh.acosh, 1],
             'atanh': [trigh.atanh, 1],
-            'log10': [, 1],
+            'log10': [log10, 1],
             'exp': [exp, 1],
             'radians': [radians, 1],
             'degrees': [degrees, 1],
@@ -8438,9 +8438,7 @@ var nerdamer = (function (imports) {
             }
 
             if(symbol.isConstant() && typeof base !== 'undefined' && base.isConstant()) {
-                var log_sym = Math.log(symbol);
-                var log_base = Math.log(base);
-                retval = new Symbol(log_sym / log_base);
+                retval = _.divide(log(symbol), log(base)); 
             }
             else if(symbol.group === EX && symbol.power.multiplier.lessThan(0) || symbol.power.toString() === '-1') {
                 symbol.power.negate();
@@ -8496,6 +8494,17 @@ var nerdamer = (function (imports) {
             }
 
             return retval;
+        }
+
+        /**
+         * The log10 function
+         * @param {Symbol} symbol
+         * @returns {Symbol}
+         */
+        function log10(symbol) {
+            if(symbol.isConstant())
+                return log(symbol, new Symbol(10));
+            return _.symfunction(Settings.LOG10, [symbol]);
         }
 
         /**
