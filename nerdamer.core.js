@@ -7066,7 +7066,7 @@ var nerdamer = (function (imports) {
                                 this.callPeekers('pre_operator', a, b, e);
 
                                 var ans;
-                                if(e.action==='divide' && variables(b).length!==0)
+                                if(e.action==='divide' && a.isPoly() && b.isPoly())
                                     ans = _.callfunction(e.action, [a,b]);
                                 else
                                     ans = _[e.action](a, b);
